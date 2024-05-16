@@ -1,0 +1,6 @@
+@ODT_System_HostAddress = http://localhost:5057
+
+GET {{ODT_System_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
