@@ -9,6 +9,7 @@ namespace ODT_System.Mapper
         public ModelToDTO()
         {
             CreateMap<User, UserLoginDTO>();
+            CreateMap<User, UserRegisterDTO>();
         }
     }
 }

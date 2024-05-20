@@ -3,6 +3,6 @@
     public interface IBcryptHandler
     {
         public string HashPassword(string password);
-        public bool VerifyPassword(string userPass, string accountPass);
+        public bool VerifyPassword(string text, string hash);
     }
 }

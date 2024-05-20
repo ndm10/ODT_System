@@ -24,30 +24,54 @@ namespace ODT_System.Services
             _bcryptHandler = bcryptHandler;
         }
 
-        public bool IsValidLogin(UserLoginDTO userLoginDTO, out string token)
+        public bool Login(UserLoginDTO userLoginDTO, out string token)
         {
             //Map UserLoginDTO to User
-            User user = _mapper.Map<User>(userLoginDTO);
+            User userLogin = _mapper.Map<User>(userLoginDTO);
 
             //Check user is exist or not
-            var userLogin = _userRepository.FindByEmail(user.Email);
-            if (userLogin == null)
+            var userStoreDb = _userRepository.FindByEmail(userLogin.Email);
+            if (userStoreDb == null)
             {
                 token = string.Empty;
                 return false;
             }
 
             // Validate password
-            if (!_bcryptHandler.VerifyPassword(userLogin.Password, user.Password))
+            if (!_bcryptHandler.VerifyPassword(userLogin.Password, userStoreDb.Password))
             {
                 token = string.Empty;
                 return false;
             }
 
             //Generate token
-            var tokenGenerate = _jwtHandler.GenerateToken(userLogin).ToString();
+            var tokenGenerate = _jwtHandler.GenerateToken(userStoreDb).ToString();
 
             token = tokenGenerate == null ? "Error while generate token" : tokenGenerate;
+            return true;
+        }
+
+        public bool Register(UserRegisterDTO user, out string message)
+        {
+            // Check email is exist or not
+            var userExist = _userRepository.FindByEmail(user.Email);
+            if (userExist != null)
+            {
+                message = "Email đã tồn tại";
+                return false;
+            }
+
+            // If email not exist, create new user
+            User newUser = _mapper.Map<User>(user);
+
+            // Hash password
+            newUser.Password = _bcryptHandler.HashPassword(newUser.Password);
+
+            // Add new user to database
+            _userRepository.Create(newUser);
+            _userRepository.Save();
+
+            message = "Tạo tài khoản thành công";
             return true;
         }
     }

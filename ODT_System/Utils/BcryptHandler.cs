@@ -9,9 +9,9 @@ namespace ODT_System.Utils
             return BCrypt.Net.BCrypt.HashPassword(password);
         }
 
-        public bool VerifyPassword(string userPass, string accountPass)
+        public bool VerifyPassword(string text, string hash)
         {
-            return BCrypt.Net.BCrypt.Verify("12345678h@", "$2a$12$HACLPFGfdrhNHIVYL3368Of3wnpYN41QK/SkH6FOhiUec3ojWz4Bq");
+            return BCrypt.Net.BCrypt.Verify(text, hash);
         }
     }
 }

@@ -19,5 +19,7 @@ public partial class User
 
     public string Phone { get; set; } = null!;
 
-    public string Desciption { get; set; } = null!;
+    public int RoleId { get; set; }
+
+    public string? Desciption { get; set; }
 }

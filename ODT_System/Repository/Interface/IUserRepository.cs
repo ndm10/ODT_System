@@ -2,7 +2,7 @@
 
 namespace ODT_System.Repository.Interface
 {
-    public interface IUserRepository
+    public interface IUserRepository: IBaseRepository
     {
         public User? FindByEmail(string email);
         public User Create(User user);

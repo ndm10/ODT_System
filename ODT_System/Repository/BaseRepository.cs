@@ -3,7 +3,7 @@ using ODT_System.Repository.Interface;
 
 namespace ODT_System.Repository
 {
-    public class BaseRepository
+    public class BaseRepository: IBaseRepository
     {
         private readonly OdtsystemContext _context;
 

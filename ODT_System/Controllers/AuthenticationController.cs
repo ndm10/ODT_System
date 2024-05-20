@@ -7,7 +7,7 @@ namespace ODT_System.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthenticationController : Controller
+    public class AuthenticationController : BaseController
     {
 
         private readonly IAuthenticationService _authenticationService;
@@ -24,58 +24,41 @@ namespace ODT_System.Controllers
             var isValid = IsValidate(out var validationErrors);
             if (!isValid)
             {
-                return BadRequest(new { message = "Validation errors", errors = validationErrors });
+                return BadRequest(new { message = "Dữ liệu đầu vào không hợp lệ", errors = validationErrors });
             }
 
-            //Login user
-            bool isValidLogin = _authenticationService.IsValidLogin(userLoginDTO, out string token);
-            if (isValidLogin == false)
+            // Login user
+            bool isValidLogin = _authenticationService.Login(userLoginDTO, out string token);
+
+            // Return error if login fail
+            if (!isValidLogin)
             {
                 return Unauthorized(new { message = "Sai email hoặc mật khẩu" });
             }
+
             return Ok(token);
         }
 
         [HttpPost("register")]
-        public IActionResult Register([FromBody] User user)
+        public IActionResult Register([FromBody] UserRegisterDTO user)
         {
             //validate input
             var isValid = IsValidate(out var validationErrors);
             if (!isValid)
             {
-                return BadRequest(new { message = "Validation errors", errors = validationErrors });
+                return BadRequest(new { message = "Dữ liệu đầu vào không hợp lệ", errors = validationErrors });
             }
 
-            //Register user
-            return Ok();
-        }
+            // Register user
+            bool isRegister = _authenticationService.Register(user, out string message);
 
-          protected bool IsValidate(out Dictionary<string, string> validationErrors)
-        {
-            validationErrors = new Dictionary<string, string>();
-
-            //validate input
-            if (!ModelState.IsValid)
+            // Return error if register fail
+            if (!isRegister)
             {
-
-                //Get all errors
-                foreach (var modelStateEntry in ModelState)
-                {
-                    var propertyName = modelStateEntry.Key;
-                    var errorMessages = modelStateEntry.Value.Errors
-                        .Select(e => e.ErrorMessage)
-                        .ToList();
-
-                    //Add to validation errors
-                    validationErrors.Add(propertyName.ToLower(), string.Join(", ", errorMessages));
-                }
-
-                // Return false if has validation errors
-                return false;
+                return BadRequest(message);
             }
 
-            // Return true if no validation errors
-            return true;
+            return Ok(message);
         }
     }
 }
