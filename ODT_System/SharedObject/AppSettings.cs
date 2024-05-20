@@ -2,6 +2,8 @@
 {
     public class AppSettings
     {
-        public string Secret { get; set; }
+        public string Secret { get; set; } = null!;
+        public string EmailSender { get; set; } = null!;
+        public string EmailSenderPassword { get; set; } = null!;
     }
 }

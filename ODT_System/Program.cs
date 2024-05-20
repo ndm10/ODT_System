@@ -34,6 +34,9 @@ internal class Program
         builder.Services.AddScoped<IUserRepository, UserRepository>();
         builder.Services.AddScoped<IJWTHandler, JWTHandler>();
         builder.Services.AddScoped<IBcryptHandler, BcryptHandler>();
+        builder.Services.AddScoped<IBaseRepository, BaseRepository>();
+        builder.Services.AddScoped<IAccountService, AccountService>();
+        builder.Services.AddScoped<IMailHandler, MailHandler>();
 
         #region Add JWT Authentication
         //get secret key from appsettings
