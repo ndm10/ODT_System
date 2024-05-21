@@ -1,4 +1,5 @@
 ﻿using ODT_System.DTO;
+using ODT_System.Models;
 using ODT_System.Repository.Interface;
 using ODT_System.Services.Interface;
 using ODT_System.Utils.Interface;
@@ -9,12 +10,32 @@ namespace ODT_System.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IMailHandler _mailHandler;
+        private readonly IBcryptHandler _bcryptHandler;
 
-
-        public AccountService(IUserRepository userRepository, IMailHandler mailHandler)
+        public AccountService(IUserRepository userRepository, IMailHandler mailHandler, IBcryptHandler bcryptHandler)
         {
             _userRepository = userRepository;
             _mailHandler = mailHandler;
+            _bcryptHandler = bcryptHandler;
+        }
+
+        public bool VerifyEmail(VerifyEmailDTO verifyEmailDTO, out string message)
+        {
+            var email = verifyEmailDTO.Email;
+
+            // Find user by email
+            var user = _userRepository.FindByEmail(email);
+
+            // Check if user is not found
+            if (user == null)
+            {
+                message = "Email không tồn tại";
+                return false;
+            }
+
+            message = "OTP đã được gửi";
+            return true;
+
         }
 
         public bool SendOTP(SendOTPDTO sendOTPDTO, out string message)
@@ -48,27 +69,72 @@ namespace ODT_System.Services
                     subject,
                     body);
 
-            message = "Mã OTP đã được gửi tới email của bạn!";
+            string otpHash = _bcryptHandler.HashPassword(otp.ToString());
+            message = otpHash;
             return true;
         }
 
-        public bool VerifyEmail(VerifyEmailDTO verifyEmailDTO, out string message)
+        public bool VerifyOTP(VerifyOTPDTO verifyOTPDTO, out string message)
         {
-            var email = verifyEmailDTO.Email;
+            // Veriry OTP
+            var isValid = _bcryptHandler.VerifyPassword(verifyOTPDTO.OTPEnter, verifyOTPDTO.OTPHash);
 
+            if (!isValid)
+            {
+                message = "Mã OTP không đúng";
+                return false;
+            }
+
+            message = "Mã OTP đúng";
+            return true;
+        }
+
+        public bool NewPassword(NewPasswordDTO newPasswordDTO, out string message)
+        {
             // Find user by email
-            var user = _userRepository.FindByEmail(email);
+            var user = _userRepository.FindByEmail(newPasswordDTO.Email);
 
-            // Check if user is not found
             if (user == null)
             {
                 message = "Email không tồn tại";
                 return false;
             }
 
-            message = "OTP đã được gửi";
-            return true;
+            // Hash new password
+            user.Password = _bcryptHandler.HashPassword(newPasswordDTO.NewPassword);
+            
+            // Update new password
+            _userRepository.Update(user);
+            _userRepository.Save();
 
+            message = "Đổi mật khẩu thành công";
+            return true;
+        }
+
+        public User? FindByEmail(string email)
+        {
+            return _userRepository.FindByEmail(email);
+        }
+
+        public bool UpdateProfile(UpdateProfileDTO updateProfileDTO, string emailAccount)
+        {
+            // Find user by email
+            var user = _userRepository.FindByEmail(emailAccount);
+
+            if (user == null)
+            {
+                return false;
+            }
+
+            user.FullName = updateProfileDTO.FullName == null? user.FullName : updateProfileDTO.FullName;
+            user.Phone = updateProfileDTO.Phone == null? user.Phone : updateProfileDTO.Phone;
+            user.Gender = updateProfileDTO.Gender == null? user.Gender : updateProfileDTO.Gender.Value;
+            user.Dob = updateProfileDTO.Dob == null? user.Dob : updateProfileDTO.Dob.Value;
+            user.Desciption = updateProfileDTO.Desciption == null? user.Desciption : updateProfileDTO.Desciption;
+
+            _userRepository.Update(user);
+            _userRepository.Save();
+            return true;
         }
     }
 }

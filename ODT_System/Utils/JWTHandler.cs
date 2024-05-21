@@ -26,9 +26,11 @@ namespace ODT_System.Utils
 
             var secretKeyBytes = Encoding.UTF8.GetBytes(secretKey);
 
+            // Create the claims
             var subject = new ClaimsIdentity(new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Email, user.Email),
             });
 
             // Set the expire time
