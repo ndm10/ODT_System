@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using ODT_System.Mapper;
 using ODT_System.Models;
 using ODT_System.Repository;
@@ -19,13 +20,13 @@ internal class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        //Add mapper service
+        // Add mapper service
         builder.Services.AddAutoMapper(typeof(DTOToModel).Assembly);
         builder.Services.AddAutoMapper(typeof(ModelToDTO).Assembly);
 
         // Add DbContext configuration
         builder.Services.AddDbContext<OdtsystemContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("connectionDeploy")));
+            options.UseSqlServer(builder.Configuration.GetConnectionString("connectionDeploy")));
 
         builder.Services.AddScoped<OdtsystemContext>();
 
@@ -39,13 +40,10 @@ internal class Program
         builder.Services.AddScoped<IJWTHandler, JWTHandler>();
         builder.Services.AddScoped<IBcryptHandler, BcryptHandler>();
 
-
-        #region Add JWT Authentication
-        //get secret key from appsettings
+        // Add JWT Authentication
         var secretKey = builder.Configuration.GetSection("AppSettings:Secret").Value;
         var secretKeyBytes = Encoding.UTF8.GetBytes(secretKey);
         builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
-        //add authentication
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
@@ -53,20 +51,44 @@ internal class Program
                 {
                     ValidateIssuer = false,
                     ValidateAudience = false,
-
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-
                     IssuerSigningKey = new SymmetricSecurityKey(secretKeyBytes),
-
                     ClockSkew = TimeSpan.Zero
                 };
             });
-        #endregion
 
-        // Add services to the container.
+        builder.Services.AddSwaggerGen(c =>
+        {
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+
+            // Define the BearerAuth scheme
+            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                Name = "Authorization",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.Http,
+                Scheme = "bearer"
+            });
+
+            c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    new string[] {}
+                }
+            });
+        });
+
         builder.Services.AddControllers();
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
 
         var app = builder.Build();
