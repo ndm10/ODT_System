@@ -1,1 +1,10 @@
 ODT_System/.vs/
+
+# directories
+**/bin/
+**/obj/
+**/out/
+
+# files
+Dockerfile*
+**/*.md
