@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using ODT_System.Mapper;
 using ODT_System.Models;
 using ODT_System.Repository;
@@ -26,17 +27,18 @@ internal class Program
         builder.Services.AddDbContext<OdtsystemContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("connectionDeploy")));
 
-        // Add DbContext services
         builder.Services.AddScoped<OdtsystemContext>();
 
-        // Add services
-        builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
         builder.Services.AddScoped<IUserRepository, UserRepository>();
+        builder.Services.AddScoped<IBaseRepository, BaseRepository>();
+
+        builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+        builder.Services.AddScoped<IAccountService, AccountService>();
+
+        builder.Services.AddScoped<IMailHandler, MailHandler>();
         builder.Services.AddScoped<IJWTHandler, JWTHandler>();
         builder.Services.AddScoped<IBcryptHandler, BcryptHandler>();
-        builder.Services.AddScoped<IBaseRepository, BaseRepository>();
-        builder.Services.AddScoped<IAccountService, AccountService>();
-        builder.Services.AddScoped<IMailHandler, MailHandler>();
+
 
         #region Add JWT Authentication
         //get secret key from appsettings
@@ -62,13 +64,102 @@ internal class Program
             });
         #endregion
 
+        builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = "EuthorizationBearer";
+                options.DefaultChallengeScheme = "EuthorizationBearer";
+            })
+            .AddScheme<EuthorizationBearerSchemeOptions, EuthorizationBearerHandler>("EuthorizationBearer", null);
+
         // Add services to the container.
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
+
+        //if (builder.Environment.IsProduction())
+        //{
+        builder.Services.AddSwaggerGen(c =>
+        {
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+
+            c.AddSecurityDefinition("Euthorization", new OpenApiSecurityScheme
+            {
+                Description = "Enter 'Bearer' [space] and then your token in the text input below.",
+                Name = "Euthorization",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.ApiKey,
+                Scheme = "Bearer"
+            });
+
+            c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Euthorization"
+                }
+            },
+            new string[] {}
+        }
+            });
+        });
+        //}
+        //else
+        //{
+        //builder.Services.AddSwaggerGen(
+        //options =>
+        //{
+        //    options.SwaggerDoc("v1", new OpenApiInfo { Title = "ClassNTutor", Version = "v1" });
+        //    options.AddSecurityDefinition(
+        //        "Bearer",
+        //        new OpenApiSecurityScheme
+        //{
+        //    In = ParameterLocation.Header,
+        //    Description = "Insert token.",
+        //    Name = "Authorization",
+        //    Type = SecuritySchemeType.Http,
+        //    BearerFormat = "JWT",
+        //    Scheme = "Bearer"
+        //}
+        //        );
+
+        //    options.AddSecurityRequirement(
+        //        new OpenApiSecurityRequirement()
+        //{
+        //        {
+        //            new OpenApiSecurityScheme
+        //            {
+        //                Reference = new OpenApiReference
+        //                {
+        //                    Type = ReferenceType.SecurityScheme,
+        //                    Id = "Bearer"
+        //                },
+        //            },
+        //            new List<string>()
+        //            }
+        //    }
+        //        );
+        //}
+        //);
+        //}
+
 
         var app = builder.Build();
+
+        // This middleware should come first
+        app.Use(async (context, next) =>
+        {
+            var euthorizationHeader = context.Request.Headers["Euthorization"].FirstOrDefault();
+            if (!string.IsNullOrEmpty(euthorizationHeader))
+            {
+                context.Request.Headers.Remove("Euthorization");
+                context.Request.Headers.Add("Authorization", euthorizationHeader);
+            }
+            await next();
+        });
 
         // Configure the HTTP request pipeline.
         //if (app.Environment.IsDevelopment())
@@ -79,6 +170,7 @@ internal class Program
 
         app.UseHttpsRedirection();
 
+        app.UseAuthentication();
         app.UseAuthorization();
 
         app.MapControllers();
