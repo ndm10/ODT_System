@@ -10,6 +10,7 @@ namespace ODT_System.Mapper
         {
             CreateMap<UserLoginDTO, User>();
             CreateMap<UserRegisterDTO, User>();
+            CreateMap<ViewProfileDTO, User>();
         }
     }
 }

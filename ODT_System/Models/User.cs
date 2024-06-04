@@ -22,4 +22,8 @@ public partial class User
     public int RoleId { get; set; }
 
     public string? Desciption { get; set; }
+
+    public virtual ICollection<Post> Posts { get; set; } = new List<Post>();
+
+    public virtual Role Role { get; set; } = null!;
 }

@@ -34,7 +34,7 @@ namespace ODT_System.Utils
             });
 
             // Set the expire time
-            var expire = System.DateTime.UtcNow.AddMinutes(180);
+            var expire = System.DateTime.UtcNow.AddDays(30);
 
             // Create the signing credentials
             var signingCredentials = new SigningCredentials(new SymmetricSecurityKey(secretKeyBytes), SecurityAlgorithms.HmacSha256Signature);

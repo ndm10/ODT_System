@@ -5,7 +5,7 @@ namespace ODT_System.Services.Interface
 {
     public interface IAuthenticationService
     {
-        public bool Login(UserLoginDTO user, out string token);
+        public bool Login(UserLoginDTO user, out Dictionary<string, object> data);
         public bool Register(UserRegisterDTO user, out string message);
     }
 }

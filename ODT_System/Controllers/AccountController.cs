@@ -38,46 +38,6 @@ namespace ODT_System.Controllers
             return Ok(message);
         }
 
-        [HttpPost("forgot-password/send-otp")]
-        public IActionResult SendOTP([FromBody] SendOTPDTO sendOTPDTO)
-        {
-            //validate input
-            var isValid = IsValidate(out var validationErrors);
-            if (!isValid)
-            {
-                return BadRequest(new { message = "Dữ liệu đầu vào không hợp lệ", errors = validationErrors });
-            }
-
-            bool isSent = _accountService.SendOTP(sendOTPDTO, out string message);
-
-            if (!isSent)
-            {
-                return BadRequest(message);
-            }
-
-            return Ok(message);
-        }
-
-        [HttpPost("forgot-password/verify-otp")]
-        public IActionResult VerifyOTP([FromBody] VerifyOTPDTO verifyOTPDTO)
-        {
-            //validate input
-            var isValid = IsValidate(out var validationErrors);
-            if (!isValid)
-            {
-                return BadRequest(new { message = "Dữ liệu đầu vào không hợp lệ", errors = validationErrors });
-            }
-
-            bool isVerified = _accountService.VerifyOTP(verifyOTPDTO, out string message);
-
-            if (!isVerified)
-            {
-                return BadRequest(message);
-            }
-
-            return Ok(message);
-        }
-
         [HttpPut("forgot-password/new-password")]
         public IActionResult NewPassword([FromBody] NewPasswordDTO newPasswordDTO)
         {
@@ -110,7 +70,7 @@ namespace ODT_System.Controllers
             }
 
             // Get user by email
-            var user = _accountService.FindByEmail(email);
+            var user = _accountService.FindUserProfile(email);
 
             if (user == null)
             {
