@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Caching.Memory;
 using ODT_System.DTO;
-using ODT_System.Models;
 using ODT_System.Repository.Interface;
 using ODT_System.Services.Interface;
 using ODT_System.Utils.Interface;
@@ -129,6 +128,35 @@ namespace ODT_System.Services
 
             _userRepository.Update(user);
             _userRepository.Save();
+            return true;
+        }
+
+        public bool ChangePassword(ChangePasswordDTO changePasswordDTO, string email, out string message)
+        {
+            // Find user by email
+            var user = _userRepository.FindByEmail(email);
+
+            // Check if user is not found
+            if (user == null)
+            {
+                message = "Tài khoản không tồn tại";
+                return false;
+            }
+            
+            // Check if old password is correct
+            if (!_bcryptHandler.VerifyPassword(changePasswordDTO.OldPassword, user.Password))
+            {
+                message = "Mật khẩu cũ không chính xác";
+                return false;
+            }
+
+            // Hash new password
+            user.Password = _bcryptHandler.HashPassword(changePasswordDTO.NewPassword);
+
+            // Update new password
+            _userRepository.Update(user);
+            _userRepository.Save();
+            message = "Cập nhật mật khẩu thành công";
             return true;
         }
     }

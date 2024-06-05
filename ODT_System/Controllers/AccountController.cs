@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ODT_System.DTO;
-using ODT_System.Repository.Interface;
 using ODT_System.Services.Interface;
 using System.Security.Claims;
 
@@ -100,6 +98,29 @@ namespace ODT_System.Controllers
             }
 
             return Ok("Cập nhật thông tin thành công");
+        }
+
+        [Authorize]
+        [HttpPut("change-password")]
+        public IActionResult ChangePassword(ChangePasswordDTO changePasswordDTO)
+        {
+            // Get email from token
+            var email = User.FindFirstValue(ClaimTypes.Email);
+
+            if (email == null)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error with authencation");
+            }
+
+            // Change password
+            bool isChanged = _accountService.ChangePassword(changePasswordDTO, email, out string message);
+
+            if (!isChanged)
+            {
+                return BadRequest(message);
+            }
+
+            return Ok(message);
         }
     }
 }
