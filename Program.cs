@@ -26,7 +26,7 @@ internal class Program
 
         // Add DbContext configuration
         builder.Services.AddDbContext<OdtsystemContext>(options =>
-            options.UseSqlServer(builder.Configuration.GetConnectionString("connectionDeploy")));
+            options.UseSqlServer(builder.Configuration.GetConnectionString("connection")));
 
         builder.Services.AddScoped<OdtsystemContext>();
 
@@ -89,6 +89,17 @@ internal class Program
         });
 
         builder.Services.AddControllers();
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("AllowAllOrigins",
+                builder =>
+                {
+                    builder.AllowAnyOrigin()
+                           .AllowAnyMethod()
+                           .AllowAnyHeader();
+                });
+        });
+
         builder.Services.AddMemoryCache();
         builder.Services.AddEndpointsApiExplorer();
 
@@ -98,6 +109,8 @@ internal class Program
         app.UseSwaggerUI();
 
         app.UseHttpsRedirection();
+
+        app.UseCors("AllowAllOrigins");
 
         app.UseAuthentication();
         app.UseAuthorization();
