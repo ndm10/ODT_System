@@ -9,17 +9,31 @@ public partial class Post
 
     public string ContactPhone { get; set; } = null!;
 
-    public string PostContent { get; set; } = null!;
+    public string ShortDescription { get; set; } = null!;
 
-    public string? Address { get; set; }
+    public string StudyAddress { get; set; } = null!;
 
-    public int? NumberOfStudent { get; set; }
+    public int NumberOfStudent { get; set; }
 
-    public byte? StudentGender { get; set; }
+    public DateOnly StartDate { get; set; }
+
+    public decimal? StudyHour { get; set; }
+
+    public string Subject { get; set; } = null!;
+
+    public byte StudentGender { get; set; }
 
     public decimal? Fee { get; set; }
 
-    public int? UserId { get; set; }
+    public int? TypeOfFee { get; set; }
 
-    public virtual User? User { get; set; }
+    public int? DayPerWeek { get; set; }
+
+    public int UserId { get; set; }
+
+    public string Description { get; set; } = null!;
+
+    public virtual ICollection<StudyTime> StudyTimes { get; set; } = new List<StudyTime>();
+
+    public virtual User User { get; set; } = null!;
 }

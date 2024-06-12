@@ -15,45 +15,55 @@ public partial class OdtsystemContext : DbContext
     {
     }
 
-    public virtual DbSet<DayOfWeek> DayOfWeeks { get; set; }
+    public virtual DbSet<Chat> Chats { get; set; }
 
     public virtual DbSet<Post> Posts { get; set; }
 
     public virtual DbSet<Role> Roles { get; set; }
 
-    public virtual DbSet<User> Users { get; set; }
+    public virtual DbSet<StudyTime> StudyTimes { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("server=DESKTOP-5BDUDS2\\MINHNGUYENDB; database=ODTSystem;Uid=sa; Pwd=123456;TrustServerCertificate=true");
+    public virtual DbSet<User> Users { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<DayOfWeek>(entity =>
+        modelBuilder.Entity<Chat>(entity =>
         {
-            entity.ToTable("DayOfWeek");
+            entity.ToTable("Chat");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
-            entity.Property(e => e.DayOfWeek1)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("DayOfWeek");
+            entity.Property(e => e.Content).HasColumnType("ntext");
+            entity.Property(e => e.Time).HasColumnType("datetime");
+
+            entity.HasOne(d => d.FromNavigation).WithMany(p => p.ChatFromNavigations)
+                .HasForeignKey(d => d.From)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Chat_User");
+
+            entity.HasOne(d => d.ToNavigation).WithMany(p => p.ChatToNavigations)
+                .HasForeignKey(d => d.To)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Chat_User1");
         });
 
         modelBuilder.Entity<Post>(entity =>
         {
             entity.ToTable("Post");
 
-            entity.Property(e => e.Address).HasColumnType("ntext");
             entity.Property(e => e.ContactPhone)
                 .HasMaxLength(10)
                 .IsUnicode(false)
                 .IsFixedLength();
+            entity.Property(e => e.Description).HasColumnType("ntext");
             entity.Property(e => e.Fee).HasColumnType("money");
-            entity.Property(e => e.PostContent).HasColumnType("ntext");
+            entity.Property(e => e.ShortDescription).HasColumnType("ntext");
+            entity.Property(e => e.StudentGender).HasDefaultValue((byte)3);
+            entity.Property(e => e.StudyAddress).HasColumnType("ntext");
+            entity.Property(e => e.StudyHour).HasColumnType("decimal(18, 0)");
+            entity.Property(e => e.Subject).HasMaxLength(255);
 
             entity.HasOne(d => d.User).WithMany(p => p.Posts)
                 .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Post_User");
         });
 
@@ -63,6 +73,16 @@ public partial class OdtsystemContext : DbContext
 
             entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.Name).HasMaxLength(255);
+        });
+
+        modelBuilder.Entity<StudyTime>(entity =>
+        {
+            entity.ToTable("StudyTime");
+
+            entity.HasOne(d => d.Post).WithMany(p => p.StudyTimes)
+                .HasForeignKey(d => d.PostId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_StudyTime_Post");
         });
 
         modelBuilder.Entity<User>(entity =>

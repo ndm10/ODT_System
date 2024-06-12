@@ -23,6 +23,10 @@ public partial class User
 
     public string? Desciption { get; set; }
 
+    public virtual ICollection<Chat> ChatFromNavigations { get; set; } = new List<Chat>();
+
+    public virtual ICollection<Chat> ChatToNavigations { get; set; } = new List<Chat>();
+
     public virtual ICollection<Post> Posts { get; set; } = new List<Post>();
 
     public virtual Role Role { get; set; } = null!;

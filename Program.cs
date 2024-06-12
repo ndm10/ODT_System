@@ -26,7 +26,7 @@ internal class Program
 
         // Add DbContext configuration
         builder.Services.AddDbContext<OdtsystemContext>(options =>
-            options.UseSqlServer(builder.Configuration.GetConnectionString("connection")));
+            options.UseSqlServer(builder.Configuration.GetConnectionString("connectionDeploy")));
 
         builder.Services.AddScoped<OdtsystemContext>();
 
