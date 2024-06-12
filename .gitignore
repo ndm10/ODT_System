@@ -8,3 +8,4 @@ ODT_System/.vs/
 # files
 Dockerfile*
 **/*.md
+.vs/

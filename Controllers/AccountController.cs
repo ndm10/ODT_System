@@ -122,5 +122,40 @@ namespace ODT_System.Controllers
 
             return Ok(message);
         }
+
+        [Authorize]
+        [HttpPost("post")]
+        public IActionResult CreatePost()
+        {
+            return Ok();
+        }
+
+        [Authorize(Roles = "Tutor")]
+        [HttpGet("post")]
+        public IActionResult ListPost()
+        {
+            return Ok();
+        }
+
+        [Authorize(Roles = "Tutor")]
+        [HttpGet("post/{id}")]
+        public IActionResult PostDetails(int id)
+        {
+            return Ok();
+        }
+
+        [Authorize(Roles = "Tutor")]
+        [HttpPut("post")]
+        public IActionResult UpdatePost()
+        {
+            return Ok();
+        }
+
+        [Authorize(Roles = "Tutor")]
+        [HttpDelete("post")]
+        public IActionResult DeletePost()
+        {
+            return Ok();
+        }
     }
 }
