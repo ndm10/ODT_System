@@ -25,6 +25,10 @@ public partial class OdtsystemContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("server=DESKTOP-5BDUDS2\\MINHNGUYENDB; database=ODTSystem;Uid=sa; Pwd=123456;TrustServerCertificate=true");
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Chat>(entity =>
@@ -53,13 +57,15 @@ public partial class OdtsystemContext : DbContext
                 .HasMaxLength(10)
                 .IsUnicode(false)
                 .IsFixedLength();
+            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.Description).HasColumnType("ntext");
             entity.Property(e => e.Fee).HasColumnType("money");
-            entity.Property(e => e.ShortDescription).HasColumnType("ntext");
+            entity.Property(e => e.ShortDescription).HasMaxLength(500);
             entity.Property(e => e.StudentGender).HasDefaultValue((byte)3);
-            entity.Property(e => e.StudyAddress).HasColumnType("ntext");
+            entity.Property(e => e.StudyAddress).HasMaxLength(500);
             entity.Property(e => e.StudyHour).HasColumnType("decimal(18, 0)");
             entity.Property(e => e.Subject).HasMaxLength(255);
+            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
             entity.HasOne(d => d.User).WithMany(p => p.Posts)
                 .HasForeignKey(d => d.UserId)

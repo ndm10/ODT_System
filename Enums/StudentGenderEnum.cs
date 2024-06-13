@@ -1,9 +1,9 @@
 ﻿namespace ODT_System.Enums
 {
-    public enum StudentGender
+    public enum StudentGenderEnum
     {
-        Male,
         Female,
+        Male,
         Both
     }
 }

@@ -33,6 +33,16 @@ public partial class Post
 
     public string Description { get; set; } = null!;
 
+    public int Status { get; set; }
+
+    public bool IsHidden { get; set; }
+
+    public bool IsDeleted { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+
+    public DateTime? UpdatedAt { get; set; }
+
     public virtual ICollection<StudyTime> StudyTimes { get; set; } = new List<StudyTime>();
 
     public virtual User User { get; set; } = null!;

@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client;
 using ODT_System.DTO;
 using ODT_System.Services.Interface;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace ODT_System.Controllers
 {
@@ -123,39 +125,100 @@ namespace ODT_System.Controllers
             return Ok(message);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Tutor")]
         [HttpPost("post")]
-        public IActionResult CreatePost()
+        public IActionResult CreatePost(PostCreateDTO postCreateDTO)
         {
-            return Ok();
+            // Get user id from token
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
+            if (userEmail == null)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Xảy ra lỗi trong quá trình xác thực tài khoản!");
+            }
+
+            // Create post
+            bool isCreated = _accountService.CreatePost(postCreateDTO, userEmail, out string message);
+            if (!isCreated)
+            {
+                return BadRequest(message);
+            }
+
+            return Ok(message);
         }
 
         [Authorize(Roles = "Tutor")]
         [HttpGet("post")]
-        public IActionResult ListPost()
+        public IActionResult ListPost(int? pageIndex, int? pageSize, int? status, string? textSearch)
         {
-            return Ok();
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
+            if (userEmail == null)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Xảy ra lỗi trong quá trình xác thực tài khoản!");
+            }
+
+            var posts = _accountService.ListPost(userEmail, pageIndex, pageSize, status, textSearch);
+
+            return Ok(posts);
         }
 
         [Authorize(Roles = "Tutor")]
         [HttpGet("post/{id}")]
         public IActionResult PostDetails(int id)
         {
-            return Ok();
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
+            if (userEmail == null)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Xảy ra lỗi trong quá trình xác thực tài khoản!");
+            }
+
+            var post = _accountService.GetPostById(id, userEmail);
+
+            if (post == null)
+            {
+                return BadRequest("Không tìm thấy bài viết hoặc bạn không có quyền quản lý bài viết này");
+            }
+
+            return Ok(post);
         }
 
         [Authorize(Roles = "Tutor")]
         [HttpPut("post")]
-        public IActionResult UpdatePost()
+        public IActionResult UpdatePost(PostUpdateDTO postUpdateDTO)
         {
-            return Ok();
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
+            if (userEmail == null)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Xảy ra lỗi trong quá trình xác thực tài khoản!");
+            }
+
+            bool isUpdated = _accountService.UpdatePost(postUpdateDTO, userEmail, out string message);
+
+            if (!isUpdated)
+            {
+                return BadRequest(message);
+            }
+
+            return Ok(message);
         }
 
         [Authorize(Roles = "Tutor")]
-        [HttpDelete("post")]
-        public IActionResult DeletePost()
+        [HttpDelete("post/{id}")]
+        public IActionResult DeletePost(int id)
         {
-            return Ok();
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
+            if (userEmail == null)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Xảy ra lỗi trong quá trình xác thực tài khoản!");
+            }
+
+            bool isDeleted = _accountService.DeletePost(id, userEmail, out string message);
+
+            if (!isDeleted)
+            {
+                return BadRequest(message);
+            }
+
+            return Ok(message);
         }
     }
 }

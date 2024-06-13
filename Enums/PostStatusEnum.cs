@@ -1,6 +1,6 @@
 ﻿namespace ODT_System.Enums
 {
-    public enum PostStatus
+    public enum PostStatusEnum
     {
         Pending,
         Approved,

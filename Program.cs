@@ -26,19 +26,27 @@ internal class Program
 
         // Add DbContext configuration
         builder.Services.AddDbContext<OdtsystemContext>(options =>
-            options.UseSqlServer(builder.Configuration.GetConnectionString("connectionDeploy")));
+            options.UseSqlServer(builder.Configuration.GetConnectionString("connection")));
 
         builder.Services.AddScoped<OdtsystemContext>();
 
         builder.Services.AddScoped<IUserRepository, UserRepository>();
-        builder.Services.AddScoped<IBaseRepository, BaseRepository>();
+        builder.Services.AddScoped<IPostRepository, PostRepository>();
+        builder.Services.AddScoped<IStudyTimeRepository, StudyTimeRepository>();
 
         builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
         builder.Services.AddScoped<IAccountService, AccountService>();
+        builder.Services.AddScoped<ICommonService, CommonService>();
 
         builder.Services.AddScoped<IMailHandler, MailHandler>();
         builder.Services.AddScoped<IJWTHandler, JWTHandler>();
         builder.Services.AddScoped<IBcryptHandler, BcryptHandler>();
+
+        // Configure API behavior
+        //builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
+        //{
+        //    options.SuppressModelStateInvalidFilter = true;
+        //});
 
         // Add JWT Authentication
         var secretKey = builder.Configuration.GetSection("AppSettings:Secret").Value;

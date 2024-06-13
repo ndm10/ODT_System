@@ -11,6 +11,11 @@ namespace ODT_System.Mapper
             CreateMap<User, UserLoginDTO>();
             CreateMap<User, UserRegisterDTO>();
             CreateMap<User, ViewProfileDTO>();
+            CreateMap<StudyTime, StudyTimeDTO>();
+            CreateMap<Post, PostCreateDTO>();
+            CreateMap<Post, PostTutorDTO>();
+            CreateMap<Post, PostCommonDTO>();
+            CreateMap<User, UserCommonDTO>();
         }
     }
 }

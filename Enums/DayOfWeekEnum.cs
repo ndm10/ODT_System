@@ -1,6 +1,6 @@
 ﻿namespace ODT_System.Enums
 {
-    public enum DayOfWeek
+    public enum DayOfWeekEnum
     {
         Monday,
         Tuesday,

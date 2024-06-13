@@ -1,6 +1,6 @@
 ﻿namespace ODT_System.Enums
 {
-    public enum TypeOfFee
+    public enum TypeOfFeeEnum
     {
         PerHour,
         PerDay,

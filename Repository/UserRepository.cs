@@ -3,7 +3,7 @@ using ODT_System.Repository.Interface;
 using Microsoft.EntityFrameworkCore;
 namespace ODT_System.Repository
 {
-    public class UserRepository : BaseRepository, IUserRepository
+    public class UserRepository : BaseRepository<User>, IUserRepository
     {
         private readonly OdtsystemContext _context;
 
