@@ -28,7 +28,7 @@ namespace ODT_System.Controllers
             var post = _commonService.GetPostById(id);
             if (post == null)
             {
-                return NotFound();
+                return NotFound("Không tìm thấy bài viết này");
             }
             return Ok(post);
         }
