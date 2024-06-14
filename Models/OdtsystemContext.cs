@@ -61,10 +61,14 @@ public partial class OdtsystemContext : DbContext
             entity.Property(e => e.Description).HasColumnType("ntext");
             entity.Property(e => e.Fee).HasColumnType("money");
             entity.Property(e => e.ShortDescription).HasMaxLength(500);
-            entity.Property(e => e.StudentGender).HasDefaultValue((byte)3);
+            entity.Property(e => e.Status).HasMaxLength(10);
+            entity.Property(e => e.StudentGender)
+                .HasMaxLength(10)
+                .HasDefaultValue("Both");
             entity.Property(e => e.StudyAddress).HasMaxLength(500);
             entity.Property(e => e.StudyHour).HasColumnType("decimal(18, 0)");
             entity.Property(e => e.Subject).HasMaxLength(255);
+            entity.Property(e => e.TypeOfFee).HasMaxLength(20);
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
             entity.HasOne(d => d.User).WithMany(p => p.Posts)
@@ -84,6 +88,8 @@ public partial class OdtsystemContext : DbContext
         modelBuilder.Entity<StudyTime>(entity =>
         {
             entity.ToTable("StudyTime");
+
+            entity.Property(e => e.DayOfWeek).HasMaxLength(10);
 
             entity.HasOne(d => d.Post).WithMany(p => p.StudyTimes)
                 .HasForeignKey(d => d.PostId)

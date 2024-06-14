@@ -1,4 +1,5 @@
-﻿using ODT_System.Models;
+﻿using ODT_System.Enums;
+using ODT_System.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace ODT_System.DTO
@@ -30,13 +31,13 @@ namespace ODT_System.DTO
         [Required(ErrorMessage = "Vui lòng nhập môn học")]
         public string Subject { get; set; } = null!;
 
-        public byte StudentGender { get; set; }
+        [EnumValue(typeof(StudentGenderEnum))]
+        public string? StudentGender { get; set; }
 
         public decimal? Fee { get; set; }
 
-        public int? TypeOfFee { get; set; }
-
-        public int? DayPerWeek { get; set; }
+        [EnumValue(typeof(TypeOfFeeEnum))]
+        public string? TypeOfFee { get; set; }
 
         [Required(ErrorMessage = "Vui lòng nhập mô tả tuyển sinh")]
         public string Description { get; set; } = null!;

@@ -30,7 +30,7 @@ namespace ODT_System.Services
                 return null;
             }
 
-            if(post.IsHidden == true || post.Status != (int)PostStatusEnum.Approved)
+            if(post.IsHidden == true || post.Status != PostStatusEnum.Approved.ToString())
             {
                 return null;
             }
@@ -43,7 +43,7 @@ namespace ODT_System.Services
         public PaginatedModel<PostCommonDTO> GetPosts(int? pageIndex, int? pageSize, string? textSearch)
         {
             // Get all posts
-            var posts = _postRepository.GetAll().Where(p => p.IsHidden == false && p.IsDeleted == false && p.Status == (int)PostStatusEnum.Approved);
+            var posts = _postRepository.GetAll().Where(p => p.IsHidden == false && p.IsDeleted == false && p.Status == PostStatusEnum.Approved.ToString());
 
             // Filter by text search
             if (!string.IsNullOrEmpty(textSearch))

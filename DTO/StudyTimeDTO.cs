@@ -10,6 +10,6 @@
 
         public TimeOnly? To { get; set; }
 
-        public int? DayOfWeek { get; set; }
+        public string? DayOfWeek { get; set; }
     }
 }

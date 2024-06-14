@@ -1,4 +1,5 @@
-﻿using ODT_System.Validation;
+﻿using ODT_System.Enums;
+using ODT_System.Validation;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
@@ -14,7 +15,7 @@ namespace ODT_System.DTO
         public TimeOnly? To { get; set; }
 
         [Required(ErrorMessage = "Vui lòng nhập ngày trong tuần")]
-        [Range(0, 6, ErrorMessage = "Vui lòng nhập số từ 0 đến 6")]
-        public int? DayOfWeek { get; set; }
+        [EnumValue(typeof(DayOfWeekEnum))]
+        public string? DayOfWeek { get; set; }
     }
 }

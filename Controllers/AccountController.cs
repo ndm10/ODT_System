@@ -148,7 +148,7 @@ namespace ODT_System.Controllers
 
         [Authorize(Roles = "Tutor")]
         [HttpGet("post")]
-        public IActionResult ListPost(int? pageIndex, int? pageSize, int? status, string? textSearch)
+        public IActionResult ListPost(int? pageIndex, int? pageSize, string? status, string? textSearch)
         {
             var userEmail = User.FindFirstValue(ClaimTypes.Email);
             if (userEmail == null)

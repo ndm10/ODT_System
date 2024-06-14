@@ -32,15 +32,13 @@ namespace ODT_System.DTO
         [Required(ErrorMessage = "Vui lòng nhập môn học")]
         public string Subject { get; set; } = null!;
 
-        public byte? StudentGender { get; set; }
+        [EnumValue(typeof(StudentGenderEnum))]
+        public string? StudentGender { get; set; }
 
         public decimal? Fee { get; set; }
 
-        [Range(0, Constants.NumberOfTypeOfFee - 1, ErrorMessage = "Vui lòng chọn loại học phí từ 0 đến 4")]
-        public int? TypeOfFee { get; set; }
-
-        [Range(1, 7, ErrorMessage = "Vui lòng nhập số lượng ngày học trên tuần từ 1 đến 7")]
-        public int? DayPerWeek { get; set; }
+        [EnumValue(typeof(TypeOfFeeEnum))]
+        public string? TypeOfFee { get; set; }
 
         [Required(ErrorMessage = "Vui lòng nhập mô tả tuyển sinh")]
         public string Description { get; set; } = null!;

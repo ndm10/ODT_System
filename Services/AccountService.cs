@@ -191,7 +191,7 @@ namespace ODT_System.Services
 
             // Set user to post
             post.UserId = user.Id;
-            post.Status = (int)PostStatusEnum.Pending;
+            post.Status = PostStatusEnum.Pending.ToString();
             post.IsDeleted = false;
             post.IsHidden = false;
             post.CreatedAt = DateTime.Now;
@@ -204,7 +204,7 @@ namespace ODT_System.Services
             return true;
         }
 
-        public PaginatedModel<PostTutorDTO> ListPost(string userEmail, int? pageIndex, int? pageSize, int? status, string? textSearch)
+        public PaginatedModel<PostTutorDTO> ListPost(string userEmail, int? pageIndex, int? pageSize, string? status, string? textSearch)
         {
             // Find user by email
             var user = _userRepository.FindByEmailIncludeRole(userEmail);
@@ -310,9 +310,8 @@ namespace ODT_System.Services
             post.StudentGender = postUpdateDTO.StudentGender;
             post.Fee = postUpdateDTO.Fee;
             post.TypeOfFee = postUpdateDTO.TypeOfFee;
-            post.DayPerWeek = postUpdateDTO.DayPerWeek;
             post.Description = postUpdateDTO.Description;
-            post.Status = (int)PostStatusEnum.Pending;
+            post.Status = PostStatusEnum.Pending.ToString();
             post.UpdatedAt = DateTime.Now;
 
             // Delete all study time of post

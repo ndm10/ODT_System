@@ -13,7 +13,7 @@ public partial class StudyTime
 
     public TimeOnly? To { get; set; }
 
-    public int? DayOfWeek { get; set; }
+    public string? DayOfWeek { get; set; }
 
     public virtual Post Post { get; set; } = null!;
 }

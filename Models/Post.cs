@@ -21,19 +21,17 @@ public partial class Post
 
     public string Subject { get; set; } = null!;
 
-    public byte StudentGender { get; set; }
+    public string StudentGender { get; set; } = null!;
 
     public decimal? Fee { get; set; }
 
-    public int? TypeOfFee { get; set; }
-
-    public int? DayPerWeek { get; set; }
+    public string? TypeOfFee { get; set; }
 
     public int UserId { get; set; }
 
     public string Description { get; set; } = null!;
 
-    public int Status { get; set; }
+    public string Status { get; set; } = null!;
 
     public bool IsHidden { get; set; }
 
