@@ -28,8 +28,22 @@ namespace ODT_System.Controllers
             return Ok(posts);
         }
 
+        //[Authorize(Roles = "Admin")]
+        //[HttpPut("post/appove")]
+        //public IActionResult AppovePost(PostApproveDTO postApproveDTO)
+        //{
+        //    var isAppoved = _adminService.AppovePost(postApproveDTO, out string message);
+
+        //    if (!isAppoved)
+        //    {
+        //        return BadRequest(message);
+        //    }
+
+        //    return Ok(message);
+        //}
+
         [Authorize(Roles = "Admin")]
-        [HttpPut("post/appove")]
+        [HttpPut("post/manage")]
         public IActionResult AppovePost(PostApproveDTO postApproveDTO)
         {
             var isAppoved = _adminService.AppovePost(postApproveDTO, out string message);
