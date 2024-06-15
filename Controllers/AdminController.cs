@@ -39,7 +39,7 @@ namespace ODT_System.Controllers
                 return BadRequest(message);
             }
 
-            return Ok("Admin");
+            return Ok(message);
         }
 
         [Authorize(Roles = "Admin")]
