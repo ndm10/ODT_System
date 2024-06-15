@@ -386,7 +386,7 @@ namespace ODT_System.Services
             var chats = _chatRepository.GetAll().Where(c => (c.From == user.Id && c.To == withUser) || (c.From == withUser && c.To == user.Id));
 
             // Include other properties
-            chats = chats.Include(c => c.ToNavigation).Include(c => c.FromNavigation).OrderByDescending(c => c.Time);
+            chats = chats.Include(c => c.ToNavigation).Include(c => c.FromNavigation).OrderBy(c => c.Time);
 
             // Map Chat to ChatDTO
             var chatDTOs = _mapper.Map<List<ChatDTO>>(chats);
