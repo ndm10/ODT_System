@@ -415,6 +415,20 @@ namespace ODT_System.Services
             // Map User to UserChatDTO
             var userChatDTOs = _mapper.Map<List<UserChatDTO>>(userChatPartners);
 
+            // Get the lastest message of each chat partner
+            foreach (var userChatDTO in userChatDTOs)
+            {
+                var chat = _chatRepository.GetAll().Where(c =>
+                        (c.From == user.Id && c.To == userChatDTO.Id) || (c.From == userChatDTO.Id && c.To == user.Id))
+                    .OrderByDescending(c => c.Time).FirstOrDefault();
+
+                if (chat != null)
+                {
+                    userChatDTO.LastMessage = chat.Content;
+                    userChatDTO.LastMessageTime = chat.Time;
+                }
+            }
+
             return userChatDTOs;
         }
 
