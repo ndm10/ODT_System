@@ -234,7 +234,7 @@ namespace ODT_System.Services
             }
 
             // Include other properties
-            posts = posts.Include(p => p.StudyTimes);
+            posts = posts.Include(p => p.StudyTimes).OrderByDescending(p => p.CreatedAt);
 
             // Paging
             var paginatedModel = PaginatedModel<Post>.GetPaging(pageIndex, pageSize, posts);

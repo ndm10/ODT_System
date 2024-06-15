@@ -36,6 +36,7 @@ internal class Program
         builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
         builder.Services.AddScoped<IAccountService, AccountService>();
         builder.Services.AddScoped<ICommonService, CommonService>();
+        builder.Services.AddScoped<IAdminService, AdminService>();
 
         builder.Services.AddScoped<IMailHandler, MailHandler>();
         builder.Services.AddScoped<IJWTHandler, JWTHandler>();

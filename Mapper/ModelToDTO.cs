@@ -16,6 +16,8 @@ namespace ODT_System.Mapper
             CreateMap<Post, PostTutorDTO>();
             CreateMap<Post, PostCommonDTO>();
             CreateMap<User, UserCommonDTO>();
+            CreateMap<Post, PostAdminDTO>();
+            CreateMap<User, UserAdminDTO>();
         }
     }
 }

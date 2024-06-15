@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ODT_System.DTO;
+using ODT_System.Services.Interface;
 
 namespace ODT_System.Controllers
 {
@@ -7,17 +9,36 @@ namespace ODT_System.Controllers
     [ApiController]
     public class AdminController : ControllerBase
     {
+        private readonly IAdminService _adminService;
+
+        public AdminController(IAdminService adminService)
+        {
+            _adminService = adminService;
+        }
+
+        /// <summary>
+        /// Get all post to manage (Admin)
+        /// </summary>
+        /// <returns></returns>
         [Authorize(Roles = "Admin")]
         [HttpGet("post")]
-        public IActionResult GetAllPost()
+        public IActionResult GetAllPost(int? pageIndex, int? pageSize, string? status, string? textSearch)
         {
-            return Ok("Admin");
+            var posts = _adminService.GetAllPost(pageIndex, pageSize, status, textSearch);
+            return Ok(posts);
         }
 
         [Authorize(Roles = "Admin")]
         [HttpPut("post/appove")]
-        public IActionResult AppovePost()
+        public IActionResult AppovePost(PostApproveDTO postApproveDTO)
         {
+            var isAppoved = _adminService.AppovePost(postApproveDTO, out string message);
+
+            if (!isAppoved)
+            {
+                return BadRequest(message);
+            }
+
             return Ok("Admin");
         }
 
@@ -25,28 +46,50 @@ namespace ODT_System.Controllers
         [HttpGet("post/{id}")]
         public IActionResult PostDetails(int id)
         {
-            return Ok("Admin");
+            var post = _adminService.GetPostDetails(id);
+
+            if (post == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(post);
         }
 
         [Authorize(Roles = "Admin")]
         [HttpGet("user")]
-        public IActionResult GetAllUser()
+        public IActionResult GetAllUser(int? pageIndex, int? pageSize, bool? status, string? textSearch)
         {
-            return Ok("Admin");
+            var users = _adminService.GetAllUser(pageIndex, pageSize, status, textSearch);
+            return Ok(users);
         }
 
         [Authorize(Roles = "Admin")]
         [HttpGet("user/{id}")]
         public IActionResult GetUserDetails(int id)
         {
-            return Ok("Admin");
+            var user = _adminService.GetUserDetails(id);
+                
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(user);
         }
 
         [Authorize(Roles = "Admin")]
         [HttpPut("user")]
-        public IActionResult UpdateUserStatus()
+        public IActionResult UpdateUserStatus(UserUpdateAdminDTO userUpdateAdminDTO)
         {
-            return Ok("Admin");
+            var isUpdated = _adminService.UpdateUserStatus(userUpdateAdminDTO, out string message);
+
+            if (!isUpdated)
+            {
+                return BadRequest(message);
+            }
+
+            return Ok(message);
         }
     }
 }
