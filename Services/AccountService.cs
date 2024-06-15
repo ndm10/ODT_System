@@ -465,11 +465,10 @@ namespace ODT_System.Services
             _chatRepository.Add(chat);
             _chatRepository.Save();
 
-            string groupName = chat.From < chat.To ? $"{chat.From}-{chat.To}" : $"{chat.To}-{chat.From}";
-
             try
             {
-                _hubContext.Clients.Group(groupName).SendAsync("ReceiveMessage", "Có tin nhắn mới");
+                _hubContext.Clients.Group(chat.From.ToString()).SendAsync("ReceiveMessage", "Bạn vừa gửi tin nhắn");
+                _hubContext.Clients.Group(chat.To.ToString()).SendAsync("ReceiveMessage", "Có tin nhắn mới");
             }
             catch (Exception)
             {
