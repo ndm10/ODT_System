@@ -220,5 +220,55 @@ namespace ODT_System.Controllers
 
             return Ok(message);
         }
+
+        [Authorize]
+        [HttpGet("chat")]
+        public IActionResult ListChat()
+        {
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
+            if (userEmail == null)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Xảy ra lỗi trong quá trình xác thực tài khoản!");
+            }
+
+            var chats = _accountService.ListChat(userEmail);
+
+            return Ok(chats);
+        }
+
+        [Authorize]
+        [HttpGet("chat/inbox/{withUser}")]
+        public IActionResult GetInbox(int withUser)
+        {
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
+            if (userEmail == null)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Xảy ra lỗi trong quá trình xác thực tài khoản!");
+            }
+
+            var chats = _accountService.ListInbox(userEmail, withUser);
+
+            return Ok(chats);
+        }
+
+        [Authorize]
+        [HttpPost("chat")]
+        public IActionResult Chat(ChatInBoxDTO chatInBoxDTO)
+        {
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
+            if (userEmail == null)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Xảy ra lỗi trong quá trình xác thực tài khoản!");
+            }
+
+            var isInboxSuccess = _accountService.TryInbox(chatInBoxDTO, userEmail, out string message);
+
+            if (!isInboxSuccess)
+            {
+                return BadRequest(message);
+            }
+
+            return Ok(message);
+        }
     }
 }

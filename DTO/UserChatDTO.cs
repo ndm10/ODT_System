@@ -1,8 +1,6 @@
-﻿using ODT_System.Models;
-
-namespace ODT_System.DTO
+﻿namespace ODT_System.DTO
 {
-    public class UserAdminDTO
+    public class UserChatDTO
     {
         public int Id { get; set; }
 
@@ -17,9 +15,5 @@ namespace ODT_System.DTO
         public string Phone { get; set; } = null!;
 
         public int RoleId { get; set; }
-
-        public string? Desciption { get; set; }
-
-        public bool IsActive { get; set; }
     }
 }

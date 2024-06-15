@@ -18,6 +18,8 @@ namespace ODT_System.Mapper
             CreateMap<User, UserCommonDTO>();
             CreateMap<Post, PostAdminDTO>();
             CreateMap<User, UserAdminDTO>();
+            CreateMap<Chat, ChatDTO>();
+            CreateMap<User, UserChatDTO>();
         }
     }
 }

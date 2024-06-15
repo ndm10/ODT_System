@@ -16,5 +16,8 @@ namespace ODT_System.Services.Interface
         public bool VerifyEmail(VerifyEmailDTO verifyEmailDTO, out string message);
         public bool UpdatePost(PostUpdateDTO postUpdateDTO, string userEmail, out string message);
         public bool DeletePost(int id, string userEmail, out string message);
+        public List<ChatDTO> ListInbox(string userEmail, int withUser);
+        public List<UserChatDTO> ListChat(string userEmail);
+        public bool TryInbox(ChatInBoxDTO chatInBoxDTO, string userEmail, out string message);
     }
 }

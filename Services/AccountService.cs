@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using ODT_System.DTO;
 using ODT_System.Enums;
 using ODT_System.Helpers;
+using ODT_System.Hubs;
 using ODT_System.Models;
 using ODT_System.Repository.Interface;
 using ODT_System.Services.Interface;
@@ -17,14 +19,17 @@ namespace ODT_System.Services
         private readonly IUserRepository _userRepository;
         private readonly IPostRepository _postRepository;
         private readonly IStudyTimeRepository _studyTimeRepository;
+        private readonly IChatRepository _chatRepository;
         private readonly IMailHandler _mailHandler;
         private readonly IBcryptHandler _bcryptHandler;
         private readonly IMapper _mapper;
         private readonly IMemoryCache _cache;
+        private readonly IHubContext<ChatHub> _hubContext;
 
         public AccountService(IUserRepository userRepository, IMailHandler mailHandler,
             IBcryptHandler bcryptHandler, IMapper mapper, IMemoryCache cache, IPostRepository postRepository,
-            IStudyTimeRepository studyTimeRepository)
+            IStudyTimeRepository studyTimeRepository, IChatRepository chatRepository,
+            IHubContext<ChatHub> hubContext)
         {
             _userRepository = userRepository;
             _mailHandler = mailHandler;
@@ -33,6 +38,8 @@ namespace ODT_System.Services
             _cache = cache;
             _postRepository = postRepository;
             _studyTimeRepository = studyTimeRepository;
+            _chatRepository = chatRepository;
+            _hubContext = hubContext;
         }
 
         public bool VerifyEmail(VerifyEmailDTO verifyEmailDTO, out string message)
@@ -362,6 +369,102 @@ namespace ODT_System.Services
             _postRepository.Save();
 
             message = "Xóa bài viết thành công";
+            return true;
+        }
+
+        public List<ChatDTO> ListInbox(string userEmail, int withUser)
+        {
+            // Find user by email
+            var user = _userRepository.FindByEmailIncludeRole(userEmail);
+
+            if (user == null)
+            {
+                return null;
+            }
+
+            // Get list chat by user id with user chat partner
+            var chats = _chatRepository.GetAll().Where(c => (c.From == user.Id && c.To == withUser) || (c.From == withUser && c.To == user.Id));
+
+            // Include other properties
+            chats = chats.Include(c => c.ToNavigation).Include(c => c.FromNavigation).OrderByDescending(c => c.Time);
+
+            // Map Chat to ChatDTO
+            var chatDTOs = _mapper.Map<List<ChatDTO>>(chats);
+
+            return chatDTOs;
+        }
+
+        public List<UserChatDTO> ListChat(string userEmail)
+        {
+            // Find user by email
+            var user = _userRepository.FindByEmailIncludeRole(userEmail);
+
+            if (user == null)
+            {
+                return null;
+            }
+
+            // Get list chat by user id
+            var chatPartners = _chatRepository.GetAll().Where(c=> c.From == user.Id || c.To == user.Id)
+                .Select(c => c.From == user.Id ? c.To : c.From)
+                .Distinct();
+
+            // Get user chat partner
+            var userChatPartners = _userRepository.GetAll().Where(u => chatPartners.Contains(u.Id));
+
+            // Map User to UserChatDTO
+            var userChatDTOs = _mapper.Map<List<UserChatDTO>>(userChatPartners);
+
+            return userChatDTOs;
+        }
+
+        public bool TryInbox(ChatInBoxDTO chatInBoxDTO, string userEmail, out string message)
+        {
+            // Find user by email
+            var user = _userRepository.FindByEmailIncludeRole(userEmail);
+
+            if (user == null)
+            {
+                message = "Có lỗi trong quá trình xác thực tài khoản";
+                return false;
+            }
+
+            // Find chat partner by id
+            var chatPartner = _userRepository.FindById(chatInBoxDTO.To);
+
+            if (chatPartner == null)
+            {
+                message = "Người dùng không tồn tại";
+                return false;
+            }
+
+            // Map ChatInBoxDTO to Chat
+            var chat = _mapper.Map<Chat>(chatInBoxDTO);
+
+            // Set from and to
+            chat.From = user.Id;
+            chat.To = chatPartner.Id;
+            chat.Time = DateTime.Now;
+            chat.IsDelete = false;
+
+            // Add chat to db
+            _chatRepository.Add(chat);
+            _chatRepository.Save();
+
+            string groupName = chat.From < chat.To ? $"{chat.From}-{chat.To}" : $"{chat.To}-{chat.From}";
+
+            try
+            {
+                _hubContext.Clients.Group(groupName).SendAsync("ReceiveMessage", "Có tin nhắn mới");
+            }
+            catch (Exception)
+            {
+                message = "Gửi tin nhắn thất bại";
+                return false;
+            }
+
+
+            message = "Gửi tin nhắn thành công";
             return true;
         }
     }

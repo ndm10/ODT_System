@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using ODT_System.Hubs;
 using ODT_System.Mapper;
 using ODT_System.Models;
 using ODT_System.Repository;
@@ -32,6 +33,7 @@ internal class Program
         builder.Services.AddScoped<IUserRepository, UserRepository>();
         builder.Services.AddScoped<IPostRepository, PostRepository>();
         builder.Services.AddScoped<IStudyTimeRepository, StudyTimeRepository>();
+        builder.Services.AddScoped<IChatRepository, ChatRepository>();
 
         builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
         builder.Services.AddScoped<IAccountService, AccountService>();
@@ -42,6 +44,8 @@ internal class Program
         builder.Services.AddScoped<IJWTHandler, JWTHandler>();
         builder.Services.AddScoped<IBcryptHandler, BcryptHandler>();
 
+        builder.Services.AddSignalR();
+
         // Configure API behavior
         //builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
         //{
@@ -49,6 +53,7 @@ internal class Program
         //});
 
         // Add JWT Authentication
+
         var secretKey = builder.Configuration.GetSection("AppSettings:Secret").Value;
         var secretKeyBytes = Encoding.UTF8.GetBytes(secretKey);
         builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
@@ -106,9 +111,9 @@ internal class Program
         app.UseSwagger();
         app.UseSwaggerUI();
 
-        app.UseHttpsRedirection();
+        app.MapHub<ChatHub>("/chatHub");
 
-        app.UseCors("AllowAllOrigins");
+        app.UseHttpsRedirection();
 
         app.UseAuthentication();
         app.UseAuthorization();
