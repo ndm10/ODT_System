@@ -26,6 +26,8 @@ namespace ODT_System.DTO
 
         public string? TypeOfFee { get; set; }
 
+        public int UserId { get; set; }
+
         public string Description { get; set; } = null!;
 
         public virtual ICollection<StudyTimeDTO> StudyTimes { get; set; } = new List<StudyTimeDTO>();
