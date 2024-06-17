@@ -101,12 +101,26 @@ internal class Program
             });
         });
 
+        // Add services to the container.
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("SignalRCorsPolicy", policy =>
+            {
+                policy.WithOrigins("http://localhost:3000")
+                      .AllowAnyHeader()
+                      .AllowAnyMethod()
+                      .AllowCredentials();
+            });
+        });
+
         builder.Services.AddControllers();
 
         builder.Services.AddMemoryCache();
         builder.Services.AddEndpointsApiExplorer();
 
         var app = builder.Build();
+
+        app.UseCors("SignalRCorsPolicy");
 
         app.UseSwagger();
         app.UseSwaggerUI();
