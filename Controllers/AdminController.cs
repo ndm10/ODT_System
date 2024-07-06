@@ -29,7 +29,7 @@ namespace ODT_System.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpPut("post/appove")]
+        [HttpPut("post/manage")]
         public IActionResult AppovePost(PostApproveDTO postApproveDTO)
         {
             var isAppoved = _adminService.AppovePost(postApproveDTO, out string message);

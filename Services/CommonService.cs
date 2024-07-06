@@ -4,6 +4,7 @@ using ODT_System.DTO;
 using ODT_System.Enums;
 using ODT_System.Helpers;
 using ODT_System.Models;
+using ODT_System.Repository;
 using ODT_System.Repository.Interface;
 using ODT_System.Services.Interface;
 using ODT_System.SharedObject;
@@ -14,11 +15,13 @@ namespace ODT_System.Services
     {
         private readonly IPostRepository _postRepository;
         private readonly IMapper _mapper;
+        private readonly IUserRepository _userRepository;
 
-        public CommonService(IPostRepository postRepository, IMapper mapper)
+        public CommonService(IPostRepository postRepository, IMapper mapper, IUserRepository userRepository)
         {
             _postRepository = postRepository;
             _mapper = mapper;
+            _userRepository = userRepository;
         }
 
         public PostCommonDTO? GetPostById(int id)
@@ -30,7 +33,7 @@ namespace ODT_System.Services
                 return null;
             }
 
-            if(post.IsHidden == true || post.Status != PostStatusEnum.Approved.ToString())
+            if (post.IsHidden == true || post.Status != PostStatusEnum.Approved.ToString())
             {
                 return null;
             }
@@ -73,6 +76,39 @@ namespace ODT_System.Services
 
             return paginatedModelDTO;
 
+        }
+
+        public PaginatedModel<UserCommonDTO> GetTutors(int? pageIndex, int? pageSize, string? textSearch)
+        {
+            // Get all user
+            var users = _userRepository.GetAll().Where(u => u.RoleId == (int)RoleEnum.Tutor && u.IsActive);
+
+            // Filter by text search
+            if (!string.IsNullOrEmpty(textSearch))
+            {
+                var pattern = $"%{textSearch}%";
+                users = users.Where(u => (EF.Functions.Like(u.FullName, pattern)
+                                         || EF.Functions.Like(u.Email, pattern)
+                                         || EF.Functions.Like(u.Phone, pattern)));
+            }
+
+            // Order by IsActive
+            users = users.OrderBy(u => u.FullName);
+
+            // Pagination
+            var paginatedModel = PaginatedModel<User>.GetPaging(pageIndex, pageSize, users);
+
+            // Map User to UserAdminDTO
+            var userDTOs = _mapper.Map<List<UserCommonDTO>>(paginatedModel.items);
+            var paginatedModelDTO = new PaginatedModel<UserCommonDTO>
+            {
+                pageIndex = paginatedModel.pageIndex,
+                pageSize = paginatedModel.pageSize,
+                totalItems = paginatedModel.totalItems,
+                items = userDTOs
+            };
+
+            return paginatedModelDTO;
         }
     }
 }

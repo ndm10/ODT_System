@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ODT_System.Services;
 using ODT_System.Services.Interface;
 
 namespace ODT_System.Controllers
@@ -31,6 +33,13 @@ namespace ODT_System.Controllers
                 return NotFound("Không tìm thấy bài viết này");
             }
             return Ok(post);
+        }
+
+        [HttpGet("tutors")]
+        public IActionResult GetAllTutors(int? pageIndex, int? pageSize, string? textSearch)
+        {
+            var users = _commonService.GetTutors(pageIndex, pageSize, textSearch);
+            return Ok(users);
         }
     }
 }
