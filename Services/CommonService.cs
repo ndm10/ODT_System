@@ -24,6 +24,14 @@ namespace ODT_System.Services
             _userRepository = userRepository;
         }
 
+        public UserCommonDTO? FindUserProfile(int id)
+        {
+            // Map User to UserCommonDTO
+            var user = _userRepository.Find(id);
+            var userDTO = _mapper.Map<UserCommonDTO>(user);
+            return userDTO;
+        }
+
         public PostCommonDTO? GetPostById(int id)
         {
             var post = _postRepository.FindByIdIncludeStudyTimes(id);
@@ -92,7 +100,7 @@ namespace ODT_System.Services
                                          || EF.Functions.Like(u.Phone, pattern)));
             }
 
-            // Order by IsActive
+            // Order by FullName
             users = users.OrderBy(u => u.FullName);
 
             // Pagination

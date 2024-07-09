@@ -2,7 +2,6 @@
 {
     public enum FeedBackStatusEnum
     {
-        Pending,
         Display,
         Hidden
     }

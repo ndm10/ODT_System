@@ -17,6 +17,7 @@ namespace ODT_System.Mapper
             CreateMap<PostUpdateDTO, Post>();
             CreateMap<StudyTimeUpdateDTO, StudyTime>();
             CreateMap<ChatInBoxDTO, Chat>();
+            CreateMap<FeedbackCreateDTO, Feedback>();
         }
     }
 }

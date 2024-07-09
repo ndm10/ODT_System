@@ -26,7 +26,7 @@ internal class Program
 
         // Add DbContext configuration
         builder.Services.AddDbContext<OdtsystemContext>(options =>
-            options.UseSqlServer(builder.Configuration.GetConnectionString("connection")));
+            options.UseSqlServer(builder.Configuration.GetConnectionString("connectionDeploy")));
 
         builder.Services.AddScoped<OdtsystemContext>();
 
@@ -34,11 +34,13 @@ internal class Program
         builder.Services.AddScoped<IPostRepository, PostRepository>();
         builder.Services.AddScoped<IStudyTimeRepository, StudyTimeRepository>();
         builder.Services.AddScoped<IChatRepository, ChatRepository>();
+        builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 
         builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
         builder.Services.AddScoped<IAccountService, AccountService>();
         builder.Services.AddScoped<ICommonService, CommonService>();
         builder.Services.AddScoped<IAdminService, AdminService>();
+        builder.Services.AddScoped<IFeedbackService, FeedbackService>();
 
         builder.Services.AddScoped<IMailHandler, MailHandler>();
         builder.Services.AddScoped<IJWTHandler, JWTHandler>();

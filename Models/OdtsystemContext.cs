@@ -17,6 +17,8 @@ public partial class OdtsystemContext : DbContext
 
     public virtual DbSet<Chat> Chats { get; set; }
 
+    public virtual DbSet<Feedback> Feedbacks { get; set; }
+
     public virtual DbSet<Post> Posts { get; set; }
 
     public virtual DbSet<Role> Roles { get; set; }
@@ -24,7 +26,6 @@ public partial class OdtsystemContext : DbContext
     public virtual DbSet<StudyTime> StudyTimes { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
-
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -44,6 +45,27 @@ public partial class OdtsystemContext : DbContext
                 .HasForeignKey(d => d.To)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Chat_User1");
+        });
+
+        modelBuilder.Entity<Feedback>(entity =>
+        {
+            entity.ToTable("Feedback");
+
+            entity.Property(e => e.Content).HasColumnType("ntext");
+            entity.Property(e => e.CreateAt).HasColumnType("datetime");
+            entity.Property(e => e.Status)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.CreateBy).WithMany(p => p.FeedbackCreateBies)
+                .HasForeignKey(d => d.CreateById)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Feedback_User1");
+
+            entity.HasOne(d => d.FeedbeckTo).WithMany(p => p.FeedbackFeedbeckTos)
+                .HasForeignKey(d => d.FeedbeckToId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Feedback_User");
         });
 
         modelBuilder.Entity<Post>(entity =>

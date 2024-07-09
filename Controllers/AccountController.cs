@@ -81,6 +81,7 @@ namespace ODT_System.Controllers
 
         }
 
+        [Authorize]
         [HttpPut("profile/update")]
         public IActionResult UpdateProfile(UpdateProfileDTO updateProfileDTO)
         {
