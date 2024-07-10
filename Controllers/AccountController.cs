@@ -149,7 +149,7 @@ namespace ODT_System.Controllers
 
         [Authorize(Roles = "Tutor")]
         [HttpGet("post")]
-        public IActionResult ListPost(int? pageIndex, int? pageSize, string? status, string? textSearch)
+        public IActionResult ListPost(int? pageIndex, int? pageSize, string? status, string? textSearch, string? addressSearch)
         {
             var userEmail = User.FindFirstValue(ClaimTypes.Email);
             if (userEmail == null)
@@ -157,7 +157,7 @@ namespace ODT_System.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Xảy ra lỗi trong quá trình xác thực tài khoản!");
             }
 
-            var posts = _accountService.ListPost(userEmail, pageIndex, pageSize, status, textSearch);
+            var posts = _accountService.ListPost(userEmail, pageIndex, pageSize, status, textSearch, addressSearch);
 
             return Ok(posts);
         }

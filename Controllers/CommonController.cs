@@ -21,9 +21,9 @@ namespace ODT_System.Controllers
         }
 
         [HttpGet("post")]
-        public IActionResult GetAllPosts(int? pageIndex, int? pageSize, string? textSearch)
+        public IActionResult GetAllPosts(int? pageIndex, int? pageSize, string? textSearch, string? addressSearch)
         {
-            var posts = _commonService.GetPosts(pageIndex, pageSize, textSearch);
+            var posts = _commonService.GetPosts(pageIndex, pageSize, textSearch, addressSearch);
             return Ok(posts);
         }
 

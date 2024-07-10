@@ -51,7 +51,7 @@ namespace ODT_System.Services
             return postCommonDTO;
         }
 
-        public PaginatedModel<PostCommonDTO> GetPosts(int? pageIndex, int? pageSize, string? textSearch)
+        public PaginatedModel<PostCommonDTO> GetPosts(int? pageIndex, int? pageSize, string? textSearch, string? addressSearch)
         {
             // Get all posts
             var posts = _postRepository.GetAll().Where(p => p.IsHidden == false && p.IsDeleted == false && p.Status == PostStatusEnum.Approved.ToString());
@@ -64,6 +64,13 @@ namespace ODT_System.Services
                                          || EF.Functions.Like(p.Subject, pattern)
                                          || EF.Functions.Like(p.ContactPhone, pattern)
                                          || EF.Functions.Like(p.StudyAddress, pattern));
+            }
+
+            // Filter by address search
+            if (!string.IsNullOrEmpty(addressSearch))
+            {
+                var pattern = $"%{addressSearch}%";
+                posts = posts.Where(p => EF.Functions.Like(p.StudyAddress, pattern));
             }
 
             // Include other properties
