@@ -27,6 +27,10 @@ public partial class OdtsystemContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("server=DESKTOP-5BDUDS2\\MINHNGUYENDB; database=ODTSystem;Uid=sa; Pwd=123456;TrustServerCertificate=true");
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Chat>(entity =>
@@ -120,6 +124,9 @@ public partial class OdtsystemContext : DbContext
         {
             entity.ToTable("User");
 
+            entity.Property(e => e.Avatar)
+                .HasDefaultValue("https://w7.pngwing.com/pngs/205/731/png-transparent-default-avatar-thumbnail.png")
+                .HasColumnType("ntext");
             entity.Property(e => e.Desciption).HasColumnType("ntext");
             entity.Property(e => e.Dob).HasColumnName("DOB");
             entity.Property(e => e.Email)

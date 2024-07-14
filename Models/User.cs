@@ -21,6 +21,8 @@ public partial class User
 
     public int RoleId { get; set; }
 
+    public string Avatar { get; set; } = null!;
+
     public string? Desciption { get; set; }
 
     public bool IsActive { get; set; }

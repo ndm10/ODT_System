@@ -18,6 +18,8 @@ namespace ODT_System.DTO
 
         public int RoleId { get; set; }
 
+        public string Avatar { get; set; } = null!;
+
         public string? Desciption { get; set; }
 
         public bool IsActive { get; set; }

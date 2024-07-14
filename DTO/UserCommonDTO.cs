@@ -14,6 +14,9 @@
 
         public string Phone { get; set; } = null!;
 
+        public string Avatar { get; set; } = null!;
+
         public string? Desciption { get; set; }
+
     }
 }

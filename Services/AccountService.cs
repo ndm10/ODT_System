@@ -142,6 +142,7 @@ namespace ODT_System.Services
             user.Gender = updateProfileDTO.Gender == null ? user.Gender : updateProfileDTO.Gender.Value;
             user.Dob = updateProfileDTO.Dob == null ? user.Dob : updateProfileDTO.Dob.Value;
             user.Desciption = updateProfileDTO.Desciption == null ? user.Desciption : updateProfileDTO.Desciption;
+            user.Avatar = updateProfileDTO.Avatar == null ? user.Avatar : updateProfileDTO.Avatar;
 
             _userRepository.Update(user);
             _userRepository.Save();
